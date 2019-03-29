@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from "react-redux";
+
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
@@ -27,31 +29,35 @@ class FolderList extends React.Component {
         this.setState({ selectedIndex: index });
     };
     render () {
-        const { classes, items } = this.props;
+        const { classes, todos } = this.props;
         const { selectedIndex } = this.state;
-
+        const items = Object.keys(todos).map(key => todos[key]);
         return (
             <React.Fragment>
                 <b>{selectedIndex}</b>
                 <List className={classes.root}>
-                    {items.map((item, index) => (
-                        <ListItem
-                            key={index}
-                            button
-                            onClick={() => this.handleListItemClick(index)}
-                        >
-                            <Avatar>
-                            <ImageIcon />
-                            {item}
-                            </Avatar>
-                            <ListItemText primary={"Photo #" + item} secondary="Jan 9, 2014" />
-                            <ListItemSecondaryAction>
-                                <IconButton aria-label="Edit">
-                                    <EditIcon />
-                                </IconButton>
-                            </ListItemSecondaryAction>
-                        </ListItem>
-                    ))}
+                    {
+                        items && items.length
+                        ? items.map((item, index) => (
+                            <ListItem
+                                key={index}
+                                button
+                                onClick={() => this.handleListItemClick(index)}
+                            >
+                                <Avatar>
+                                <ImageIcon />
+                                {index}
+                                </Avatar>
+                                <ListItemText primary={item.content} secondary="Jan 9, 2014" />
+                                <ListItemSecondaryAction>
+                                    <IconButton aria-label="Edit">
+                                        <EditIcon />
+                                    </IconButton>
+                                </ListItemSecondaryAction>
+                            </ListItem>
+                    ))
+                    : "Пусто"
+                    }
                 </List>
             </React.Fragment>
         );
@@ -61,5 +67,9 @@ class FolderList extends React.Component {
 FolderList.propTypes = {
   classes: PropTypes.object.isRequired,
 };
-
-export default withStyles(styles)(FolderList);
+const mapStateToProps = state => {
+    const todos = state.todos.byIds;
+    console.log(todos);
+    return { todos };
+};
+export default connect(mapStateToProps)(withStyles(styles)(FolderList));

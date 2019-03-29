@@ -1,4 +1,8 @@
 import React from 'react';
+
+import { connect } from "react-redux";
+import { addTodo } from "../redux/actions";
+
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
@@ -8,30 +12,24 @@ import SendIcon from '@material-ui/icons/Send';
 import InputAdornment from '@material-ui/core/InputAdornment';
 
 const styles = theme => ({
-
   dense: {
     marginTop: 8,
   },
-
 });
 
-
-
 class OutlinedTextFields extends React.Component {
-  state = {
-    name: 'Cat in the Hat',
-    test: '',
-  };
+  constructor(props) {
+    super(props);
+    this.state = { input: "" };
+  }
 
-  handleChange = name => event => {
-    this.setState({
-      [name]: event.target.value,
-    });
+  handleChange = () => event => {
+    this.setState({input: event.target.value});
   };
 
   handleClickAddItem = () => {
-    this.props.add_item(this.state.name);
-    this.setState({test: this.state.name});
+    this.props.addTodo(this.state.input);
+    this.setState({ input: "" });
   };
 
   render() {
@@ -45,7 +43,8 @@ class OutlinedTextFields extends React.Component {
           className={classNames(classes.dense)}
           margin="dense"
           variant="outlined"
-          onChange={this.handleChange('name')}
+          onChange={this.handleChange()}
+          value={this.state.input}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -66,4 +65,4 @@ OutlinedTextFields.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(OutlinedTextFields);
+export default connect(null,{ addTodo })(withStyles(styles)(OutlinedTextFields));
