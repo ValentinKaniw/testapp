@@ -30,6 +30,7 @@ class OutlinedTextFields extends React.Component {
   };
 
   handleClickAddItem = () => {
+    this.props.add_item(this.state.name);
     this.setState({test: this.state.name});
   };
 

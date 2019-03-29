@@ -21,30 +21,39 @@ const styles = () => ({
 
 class FolderList extends React.Component {
     state = {
-        selectedIndex: 1,
+        selectedIndex: null,
     };
     handleListItemClick = (index) => {
         this.setState({ selectedIndex: index });
     };
     render () {
-        const { classes } = this.props;
+        const { classes, items } = this.props;
+        const { selectedIndex } = this.state;
+
         return (
-            <List className={classes.root}>
-            <ListItem
-                button
-                onClick={() => this.handleListItemClick(0)}
-            >
-                <Avatar>
-                <ImageIcon />
-                </Avatar>
-                <ListItemText primary="Photos" secondary="Jan 9, 2014" />
-                <ListItemSecondaryAction>
-                    <IconButton aria-label="Edit">
-                        <EditIcon />
-                    </IconButton>
-                </ListItemSecondaryAction>
-            </ListItem>
-            </List>
+            <React.Fragment>
+                <b>{selectedIndex}</b>
+                <List className={classes.root}>
+                    {items.map((item, index) => (
+                        <ListItem
+                            key={index}
+                            button
+                            onClick={() => this.handleListItemClick(index)}
+                        >
+                            <Avatar>
+                            <ImageIcon />
+                            {item}
+                            </Avatar>
+                            <ListItemText primary={"Photo #" + item} secondary="Jan 9, 2014" />
+                            <ListItemSecondaryAction>
+                                <IconButton aria-label="Edit">
+                                    <EditIcon />
+                                </IconButton>
+                            </ListItemSecondaryAction>
+                        </ListItem>
+                    ))}
+                </List>
+            </React.Fragment>
         );
     }
 }
