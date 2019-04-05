@@ -44,6 +44,7 @@
     "jest-pnp-resolver": "1.0.2",
     "jest-resolve": "23.6.0",
     "jest-watch-typeahead": "^0.2.1",
+    "localforage": "^1.7.3",
     "material-icons": "^0.3.0",
     "material-ui": "^0.20.2",
     "material-ui-icons": "^1.0.0-beta.36",
