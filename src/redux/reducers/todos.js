@@ -1,5 +1,5 @@
 import CacheManager from '../../cache'
-import { ADD_TODO, REFRESH_STATE } from "../actionTypes";
+import { ADD_TODO, REFRESH_STATE, MARK_COMPLETED } from "../actionTypes";
 
 const initialState = {
     allIds: [],
@@ -24,6 +24,21 @@ const initialState = {
             }
           }
         };
+        cache.writeData('state', newState);
+        return newState;
+      }
+      
+      case MARK_COMPLETED: {
+        const { item } = action.payload;
+        const itemIndex = state.byIds.indexOf(item);
+        console.log(state.byIds);
+        const newbyIds = Object.keys(state.byIds).map(key => {
+          const todo = state.byIds[key];
+          return Number(key) === itemIndex 
+            ? { ...todo, completed: !todo.completed } 
+            : todo
+        })
+        const newState = {...state, byIds: newbyIds};
         cache.writeData('state', newState);
         return newState;
       }

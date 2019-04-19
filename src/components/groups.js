@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from "react-redux";
 import CacheManager from '../cache';
-import { refreshState } from '../redux/actions';
+import { refreshState, markCompleted } from '../redux/actions';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -9,11 +9,11 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
-import ImageIcon from '@material-ui/icons/Image';
 import EditIcon from '@material-ui/icons/Edit';
 import CircularProgress from '@material-ui/core/CircularProgress';
+
+import Checkbox from '@material-ui/core/Checkbox';
 
 const styles = () => ({
   root: {
@@ -34,8 +34,8 @@ class FolderList extends React.Component {
         this.cache = new CacheManager();
     }
 
-    handleListItemClick = (index) => {
-        this.setState({ selectedIndex: index });
+    handleListItemClick = (item) => {
+        this.props.markCompleted(item);
     };
 
     refreshState = async () => {
@@ -69,12 +69,13 @@ class FolderList extends React.Component {
                             <ListItem
                                 key={index}
                                 button
-                                onClick={() => this.handleListItemClick(index)}
+                                onClick={() => this.handleListItemClick(item)}
                             >
-                                <Avatar>
-                                <ImageIcon />
-                                {index}
-                                </Avatar>
+                                <Checkbox
+                                    checked={item.completed}
+                                    tabIndex={-1}
+                                    disableRipple
+                                    />
                                 <ListItemText primary={item.content} secondary="Jan 9, 2014" />
                                 <ListItemSecondaryAction>
                                     <IconButton aria-label="Edit">
@@ -102,7 +103,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-    refreshState: state => dispatch(refreshState(state))
+    refreshState: state => dispatch(refreshState(state)),
+    markCompleted: item => dispatch(markCompleted(item))
 })
   
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(FolderList));
