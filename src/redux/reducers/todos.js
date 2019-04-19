@@ -1,10 +1,8 @@
 import CacheManager from '../../cache'
-import { ADD_TODO, REFRESH_STATE, MARK_COMPLETED } from "../actionTypes";
+import { ADD_TODO, REFRESH_STATE, MARK_COMPLETED, EDIT_TODO } from "../actionTypes";
 
-const initialState = {
-    allIds: [],
-    byIds: {}
-  };
+  const initialState = [];
+
   const cache = new CacheManager();
   let newState;
 
@@ -12,33 +10,35 @@ const initialState = {
     switch (action.type) {
       case ADD_TODO: {
         const { content } = action.payload;
-        let id = state.allIds.length;
-        newState = {
-          ...state,
-          allIds: [...state.allIds, id],
-          byIds: {
-            ...state.byIds,
-            [id]: {
+        newState = [
+            ...state,
+            {
               content,
               completed: false
             }
-          }
-        };
+          ];
         cache.writeData('state', newState);
         return newState;
       }
       
       case MARK_COMPLETED: {
         const { item } = action.payload;
-        const itemIndex = state.byIds.indexOf(item);
-        console.log(state.byIds);
-        const newbyIds = Object.keys(state.byIds).map(key => {
-          const todo = state.byIds[key];
-          return Number(key) === itemIndex 
-            ? { ...todo, completed: !todo.completed } 
-            : todo
+        newState = state.map((old_item) => {
+          return old_item === item 
+            ? { ...old_item, completed: !old_item.completed } 
+            : old_item
         })
-        const newState = {...state, byIds: newbyIds};
+        cache.writeData('state', newState);
+        return newState;
+      }
+
+      case EDIT_TODO: {
+        const { item } = action.payload;
+        newState = state.map((old_item) => {
+          return old_item === item 
+            ? { ...old_item, content: item.content } 
+            : old_item
+        })
         cache.writeData('state', newState);
         return newState;
       }

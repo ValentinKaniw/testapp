@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from "react-redux";
 import CacheManager from '../cache';
-import { refreshState, markCompleted } from '../redux/actions';
+import { refreshState, markCompleted, editTodo } from '../redux/actions';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -9,11 +9,12 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IconButton from '@material-ui/core/IconButton';
-import EditIcon from '@material-ui/icons/Edit';
+import Divider from '@material-ui/core/Divider';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
 import Checkbox from '@material-ui/core/Checkbox';
+
+import EditDialog from './editDialog'
+
 
 const styles = () => ({
   root: {
@@ -56,8 +57,9 @@ class FolderList extends React.Component {
       }
 
     render () {
-        const { classes, todos } = this.props;
+        const { classes, todos, editTodo } = this.props;
         const { selectedIndex, loading } = this.state;
+        
         const items = Object.keys(todos).map(key => todos[key]);
         return (
             <React.Fragment>
@@ -65,7 +67,7 @@ class FolderList extends React.Component {
                 <List className={classes.root}>
                     {
                         items && items.length
-                        ? items.map((item, index) => (
+                        ? items.filter(x => !x.completed).map((item, index) => (
                             <ListItem
                                 key={index}
                                 button
@@ -76,17 +78,34 @@ class FolderList extends React.Component {
                                     tabIndex={-1}
                                     disableRipple
                                     />
-                                <ListItemText primary={item.content} secondary="Jan 9, 2014" />
+                                <ListItemText primary={item.content} />
                                 <ListItemSecondaryAction>
-                                    <IconButton aria-label="Edit">
-                                        <EditIcon />
-                                    </IconButton>
+                                    <EditDialog item={item} editTodo={editTodo}/>
                                 </ListItemSecondaryAction>
                             </ListItem>
                     ))
                     : (loading ? 
                         <CircularProgress/>
                         : "Пусто")
+                    }
+                </List>
+                <Divider />
+                <List>
+                    {
+                        items.filter(x => x.completed).map((item, index) => (
+                            <ListItem
+                                key={index}
+                                button
+                                onClick={() => this.handleListItemClick(item)}
+                            >
+                                <Checkbox
+                                    checked={item.completed}
+                                    tabIndex={-1}
+                                    disableRipple
+                                    />
+                                <ListItemText primary={item.content} className='done-item'/>
+                            </ListItem>
+                        ))
                     }
                 </List>
             </React.Fragment>
@@ -98,13 +117,14 @@ FolderList.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 const mapStateToProps = state => {
-    const todos = state.todos.byIds;
+    const todos = state.todos;
     return { todos };
 };
 
 const mapDispatchToProps = dispatch => ({
     refreshState: state => dispatch(refreshState(state)),
-    markCompleted: item => dispatch(markCompleted(item))
+    markCompleted: item => dispatch(markCompleted(item)),
+    editTodo: item => dispatch(editTodo(item))
 })
   
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(FolderList));
